@@ -13,22 +13,32 @@ import java.util.*;
  * @author Enzo
  */
 public class ListFilesServer {
-    
-    private TreeMap<String, TreeSet<P2PFile>> annuaire;
-    
-    public synchronized boolean containsKey(String key){
-        return annuaire.containsKey(key);        
+
+    private TreeMap<P2PFile, TreeSet<String>> annuaire;
+
+    public synchronized boolean containsKey(P2PFile key) {
+        return annuaire.containsKey(key);
     }
-    
-    public synchronized TreeSet<P2PFile> getByKey(String key){
-        if (containsKey(key))
+
+    public synchronized TreeSet<String> getByKey(P2PFile key) {
+        if (annuaire.containsKey(key)) {
             return annuaire.get(key);
-        else
+        } else {
             return null;
+        }
     }
-    
-    public synchronized void put(String key, TreeSet<P2PFile> ts){
+
+    public synchronized void put(P2PFile key, String s) {
+        TreeSet<String> ts;
+        if (!annuaire.containsKey(key)) {
+            ts = new TreeSet<String>();
+            ts.add(s);
+        } else {
+            ts = annuaire.get(key);
+            ts.add(s);
+        }
         annuaire.put(key, ts);
-    }   
-     
+
+    }
+
 }
