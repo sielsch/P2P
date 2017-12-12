@@ -7,8 +7,6 @@ import java.util.TreeSet;
 import comClientServer.P2PFile;
 import exception.BadRequestException;
 import exception.QuitException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class P2PClient {
 
@@ -135,31 +133,41 @@ public class P2PClient {
     public static void analyseRequete(String requete) throws IOException, QuitException {
         try {
             String[] stringTable = requete.split(" ");
-            
+
             switch (stringTable[0]) {
                 case "search":
-                    oos.writeObject(requete);
-                    oos.flush();
-                    System.out.println((String) ois.readObject());
+                    if (stringTable.length == 2) {
+                        oos.writeObject(requete);
+                        oos.flush();
+                        System.out.println((String) ois.readObject());
+                    } else {
+                        System.out.println("requete invalide, rentrer une nouvelle requete");
+                    }
                     break;
                 case "get":
-                    if (stringTable.length > 2) {
+                    if (stringTable.length == 2) {
                         //throw bad request exception
+                        oos.writeObject(requete);
+                    } else {
+                        System.out.println("requete invalide, rentrer une nouvelle requete");
                     }
-                    try {
-                        Integer.parseInt(stringTable[1]);
-                    } catch (NumberFormatException e) {
-                        
-                    }
-                    
+
                     break;
                 case "list":
-                    oos.writeObject(requete);
-                    System.out.println((String) ois.readObject());
+                    if (stringTable.length == 1) {
+                        oos.writeObject(requete);
+                        System.out.println((String) ois.readObject());
+                    } else {
+                        System.out.println("requete invalide, rentrer une nouvelle requete");
+                    }
                     break;
                 case "local":
-                    directoryToListFile();
-                    System.out.println(listFiles);
+                    if (stringTable.length == 1) {
+                        directoryToListFile();
+                        System.out.println(listFiles);
+                    } else {
+                        System.out.println("requete invalide, rentrer une nouvelle requete");
+                    }
                     break;
                 case "quit":
                     throw new QuitException();
@@ -169,7 +177,7 @@ public class P2PClient {
 
             }
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(P2PClient.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
 
     }

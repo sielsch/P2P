@@ -1,5 +1,6 @@
 package server;
 
+import comClientServer.AdressServerTCP;
 import comClientServer.P2PFile;
 import java.io.*;
 import java.net.Socket;
@@ -25,11 +26,11 @@ public class ThreadServer extends Thread {
         try {
             initFlux();
 
-            String IPClient = (String) ois.readObject();
+            AdressServerTCP adressTCP = (AdressServerTCP) ois.readObject();
             TreeSet<P2PFile> ts = (TreeSet<P2PFile>) ois.readObject();
 
             for (P2PFile p : ts) {
-                lfs.put(p, IPClient);
+                lfs.put(p, adressTCP);
             }
 
             request = (String) ois.readObject();
@@ -109,8 +110,11 @@ public class ThreadServer extends Thread {
                         if (!searchTab.isEmpty()) {
                             int numFichier = Integer.parseInt(tabRequest[1]);
                             if (numFichier >= 0 && numFichier < searchTab.size()) {
-                                P2PFile key = searchTab.get(numFichier);
-                                TreeSet<String> ts = lfs.getByKey(key);
+                                P2PFile fileToDownload = searchTab.get(numFichier);
+                                TreeSet<String> ts = lfs.getByKey(fileToDownload);
+
+                                oos.writeObject(fileToDownload);
+
                                 oos.writeObject(ts);
                             } else {
                                 oos.writeObject("Numéro de fichier non valide");
@@ -123,6 +127,9 @@ public class ThreadServer extends Thread {
                         oos.writeObject("nombre de paramètre non comforme");
                     }
                     break;
+                default:
+                    System.out.println("requete invalide, rentrer une nouvelle requete");
+//			throw new BadRequestException();
             }
         } catch (IOException ex) {
             ex.printStackTrace();

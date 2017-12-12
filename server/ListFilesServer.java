@@ -5,6 +5,7 @@
  */
 package server;
 
+import comClientServer.AdressServerTCP;
 import comClientServer.P2PFile;
 import java.util.*;
 
@@ -14,13 +15,13 @@ import java.util.*;
  */
 public class ListFilesServer {
 
-    private TreeMap<P2PFile, TreeSet<String>> annuaire;
+    private TreeMap<P2PFile, TreeSet<AdressServerTCP>> annuaire;
 
     public synchronized boolean containsKey(P2PFile key) {
         return annuaire.containsKey(key);
     }
 
-    public synchronized TreeSet<String> getByKey(P2PFile key) {
+    public synchronized TreeSet<AdressServerTCP> getByKey(P2PFile key) {
         if (annuaire.containsKey(key)) {
             return annuaire.get(key);
         } else {
@@ -28,14 +29,14 @@ public class ListFilesServer {
         }
     }
 
-    public synchronized void put(P2PFile key, String s) {
-        TreeSet<String> ts;
+    public synchronized void put(P2PFile key, AdressServerTCP addr) {
+        TreeSet<AdressServerTCP> ts;
         if (!annuaire.containsKey(key)) {
-            ts = new TreeSet<String>();
-            ts.add(s);
+            ts = new TreeSet<>();
+            ts.add(addr);
         } else {
             ts = annuaire.get(key);
-            ts.add(s);
+            ts.add(addr);
         }
         annuaire.put(key, ts);
     }
