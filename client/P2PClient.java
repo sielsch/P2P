@@ -2,11 +2,9 @@ package client;
 
 import java.io.*;
 import java.net.*;
-import java.util.TreeSet;
-
 import comClientServer.P2PFile;
-import exception.BadRequestException;
 import exception.QuitException;
+import java.util.HashSet;
 
 public class P2PClient {
 
@@ -23,7 +21,7 @@ public class P2PClient {
     private static ObjectInputStream ois = null;
     private static BufferedOutputStream bos = null;
     private static BufferedInputStream bis = null;
-    private static TreeSet<P2PFile> listFiles = null;
+    private static HashSet<P2PFile> listFiles = null;
 
     private static InputStreamReader isr;
     private static BufferedReader clavier;
@@ -104,8 +102,8 @@ public class P2PClient {
         }
     }
 
-    public static TreeSet<P2PFile> directoryToListFile() {
-        TreeSet<P2PFile> t = new TreeSet<>();
+    public static HashSet<P2PFile> directoryToListFile() {
+        HashSet<P2PFile> t = new HashSet<>();
         File[] listOfFiles = P2P_directory.listFiles();
 
         if (listOfFiles.length == 0) {

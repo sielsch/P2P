@@ -111,11 +111,11 @@ public class ThreadServer extends Thread {
                             int numFichier = Integer.parseInt(tabRequest[1]);
                             if (numFichier >= 0 && numFichier < searchTab.size()) {
                                 P2PFile fileToDownload = searchTab.get(numFichier);
-                                TreeSet<AdressServerTCP> ts = lfs.getByKey(fileToDownload);
+                                HashSet<AdressServerTCP> ts = lfs.getByKey(fileToDownload);
 
                                 oos.writeObject(fileToDownload);
 
-                                oos.writeObject(ts);
+                                oos.writeObject(ts.toArray());
                                 System.out.println("\n ENVOI P2PFILE + LIST OF SEEDERS");
                             } else {
                                 oos.writeObject("Numéro de fichier non valide");

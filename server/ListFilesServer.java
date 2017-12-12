@@ -8,6 +8,7 @@ package server;
 import comClientServer.AdressServerTCP;
 import comClientServer.P2PFile;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -15,13 +16,13 @@ import java.util.*;
  */
 public class ListFilesServer {
 
-    private TreeMap<P2PFile, TreeSet<AdressServerTCP>> annuaire;
+    private ConcurrentHashMap<P2PFile, HashSet<AdressServerTCP>> annuaire;
 
     public synchronized boolean containsKey(P2PFile key) {
         return annuaire.containsKey(key);
     }
 
-    public synchronized TreeSet<AdressServerTCP> getByKey(P2PFile key) {
+    public synchronized HashSet<AdressServerTCP> getByKey(P2PFile key) {
         if (annuaire.containsKey(key)) {
             return annuaire.get(key);
         } else {
@@ -30,9 +31,9 @@ public class ListFilesServer {
     }
 
     public synchronized void put(P2PFile key, AdressServerTCP addr) {
-        TreeSet<AdressServerTCP> ts;
+        HashSet<AdressServerTCP> ts;
         if (!annuaire.containsKey(key)) {
-            ts = new TreeSet<>();
+            ts = new HashSet<>();
             ts.add(addr);
         } else {
             ts = annuaire.get(key);
@@ -47,7 +48,7 @@ public class ListFilesServer {
 
     public synchronized ArrayList<P2PFile> getKeysByName(String name) {
         Set<P2PFile> all;
-        ArrayList<P2PFile> selection = new ArrayList<P2PFile>();
+        ArrayList<P2PFile> selection = new ArrayList<>();
         all = annuaire.keySet();
         for (P2PFile p : all) {
             if (p.getName().contains(name)) {

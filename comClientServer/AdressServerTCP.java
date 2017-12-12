@@ -27,18 +27,5 @@ public class AdressServerTCP implements Comparable<AdressServerTCP> {
         this.host = host;
     }
 
-    public int compareTo(AdressServerTCP adr) {
-        int compare = this.getHost().compareTo(adr.getHost());
-        if (compare == 0) {
-            if (this.getPort() < adr.getPort()) {
-                compare = -1;
-            } else if (this.getPort() > adr.getPort()) {
-                compare = 1;
-            } else {
-                compare = 0;
-            }
-        }
-        return compare;
-    }
 
 }

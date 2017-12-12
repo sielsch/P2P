@@ -1,12 +1,12 @@
 package comClientServer;
 
 import java.io.File;
-import java.util.TreeSet;
+import java.util.HashSet;
 
 public class Functions {
 
-    public TreeSet<P2PFile> directoryToListFile(String directoryName) {
-        TreeSet<P2PFile> t = new TreeSet<>();
+    public HashSet<P2PFile> directoryToListFile(String directoryName) {
+        HashSet<P2PFile> t = new HashSet<>();
                 
         File folder = new File(directoryName);
         File[] listOfFiles = folder.listFiles();

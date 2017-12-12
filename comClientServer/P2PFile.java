@@ -62,21 +62,6 @@ public class P2PFile implements Comparable<P2PFile> {
     }
 
     @Override
-    public int compareTo(P2PFile p) {
-        int compare = this.getName().compareTo(p.getName());
-        if (compare == 0) {
-            if (this.getTaille() < p.getTaille()) {
-                compare = -1;
-            } else if (this.getTaille() > p.getTaille()) {
-                compare = 1;
-            } else {
-                compare = 0;
-            }
-        }
-        return compare;
-    }
-
-    @Override
     public String toString() {
         return "" + this.name + ", [" + this.taille + " octets]";
     }
