@@ -2,8 +2,10 @@ package client;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
@@ -13,6 +15,8 @@ import java.net.UnknownHostException;
 import java.util.TreeSet;
 
 import comClientServer.P2PFile;
+import exception.BadRequestException;
+import exception.QuitException;
 
 public class P2PClient {
 	private static Socket socketComm = null;
@@ -28,9 +32,13 @@ public class P2PClient {
 	private static ObjectInputStream ois = null;
 	private static BufferedOutputStream bos = null;
 	private static BufferedInputStream bis = null;
-	private static TreeSet<P2PFile> listFiles =null;
-	
-	
+	private static TreeSet<P2PFile> listFiles = null;
+
+	private static InputStreamReader isr;
+	private static BufferedReader clavier;
+
+	private static String requete = "";
+
 	public static void main(String[] args) {
 		verifArgument(args);
 		checkLocalHost();
@@ -42,12 +50,25 @@ public class P2PClient {
 			socketComm = new Socket(hostServer, portServer);
 
 			initFlux(socketComm);
+
 			oos.writeObject(new String(localHost));
 			oos.flush();
-			listFiles=directoryToListFile();				
+			listFiles = directoryToListFile();
 			oos.writeObject(listFiles);
 			oos.flush();
 
+			try {
+
+				while (true) {
+					System.out.println("rentrer une action : search <pattern>, get <num>, list, local list, quit");
+					requete = clavier.readLine();
+					analyseRequete(requete);
+				}
+
+			} catch (QuitException e) {
+				// TODO: handle exception
+
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -114,6 +135,45 @@ public class P2PClient {
 		ois = new ObjectInputStream(socketComm.getInputStream());
 		bos = new BufferedOutputStream(oos);
 		bis = new BufferedInputStream(ois);
+		isr = new InputStreamReader(System.in);
+		clavier = new BufferedReader(isr);
+	}
+
+	public static void analyseRequete(String requete) throws  IOException, QuitException {
+		String[] stringTable = requete.split(" ");
+
+		switch (stringTable[0]) {
+		case "search":
+			oos.writeObject(new String(requete)); 
+			oos.flush();
+			// ois.readobject
+			break;
+		case "get":
+			if(stringTable.length>2){
+				//throw bad request exception
+			}
+			try {
+				Integer.parseInt(stringTable[1]);
+			} catch (NumberFormatException e) {
+				
+			}
+		
+			break;
+		case "list":
+			oos.writeObject(new String(requete));
+			break;
+		case "local":
+			directoryToListFile();
+			System.out.println(listFiles);
+			break;
+		case "quit":
+			throw new QuitException();
+		default:
+			System.out.println("requete invalide, rentrer une nouvelle requete");
+//			throw new BadRequestException();
+
+		}
+
 	}
 
 }
