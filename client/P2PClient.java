@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.*;
 import java.util.TreeSet;
 
+import comClientServer.AdressServerTCP;
 import comClientServer.P2PFile;
 import exception.BadRequestException;
 import exception.QuitException;
@@ -40,11 +41,13 @@ public class P2PClient {
         try {
             socketConn = new ServerSocket(0);
             threadClient = new ThreadClient(socketConn);
+            threadClient.start();
+            
             socketComm = new Socket(hostServer, portServer);
 
             initFlux(socketComm);
 
-            oos.writeObject(new String(localHost));
+            oos.writeObject(new AdressServerTCP(socketConn.getLocalPort(), localHost));
             oos.flush();
             listFiles = directoryToListFile();
             oos.writeObject(listFiles);
@@ -173,5 +176,8 @@ public class P2PClient {
         }
 
     }
+    
+    
+
 
 }
