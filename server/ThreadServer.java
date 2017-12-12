@@ -4,6 +4,8 @@ import comClientServer.P2PFile;
 import java.io.*;
 import java.net.Socket;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ThreadServer extends Thread {
 
@@ -21,11 +23,7 @@ public class ThreadServer extends Thread {
         String request = "";
 
         try {
-            ois = new ObjectInputStream(new BufferedInputStream(sockComm.getInputStream()));
-
-            oos = new ObjectOutputStream(new BufferedOutputStream(sockComm.getOutputStream()));
-            oos.flush();
-            System.out.println("flux créé");
+            initFlux();
 
             String IPClient = (String) ois.readObject();
             TreeSet<P2PFile> ts = (TreeSet<P2PFile>) ois.readObject();
@@ -58,6 +56,17 @@ public class ThreadServer extends Thread {
         }
     }
 
+    public void initFlux() {
+        try {
+            ois = new ObjectInputStream(new BufferedInputStream(sockComm.getInputStream()));
+            oos = new ObjectOutputStream(new BufferedOutputStream(sockComm.getOutputStream()));
+            oos.flush();
+            System.out.println("flux créé");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public void processRequest(String request) {
         try {
             String[] tabRequest = request.split(" ");
@@ -65,41 +74,53 @@ public class ThreadServer extends Thread {
 
             switch (tabRequest[0]) {
                 case "search":
-                    String res = "";
-                    int i = 0;
-                    searchTab = lfs.getKeysByName(tabRequest[1]);
-                    for (P2PFile p : searchTab) {
-                        res += i + ". " + p + "\n";
+                    if (tabRequest.length == 2) {
+                        String res = "";
+                        int i = 0;
+                        searchTab = lfs.getKeysByName(tabRequest[1]);
+                        for (P2PFile p : searchTab) {
+                            res += i + ". " + p + "\n";
+                        }
+                        oos.writeObject(res);
+                    } else {
+                        oos.writeObject("nombre de paramètre non comforme");
                     }
-                    oos.writeObject(res);
                     break;
 
                 case "list":
-                    String re = "";
-                    if (!searchTab.isEmpty()) {
-                        int j = 0;
-                        for (P2PFile p : searchTab) {
-                            re += j + ". " + p + "\n";
+                    if (tabRequest.length == 1) {
+                        String re = "";
+                        if (!searchTab.isEmpty()) {
+                            int j = 0;
+                            for (P2PFile p : searchTab) {
+                                re += j + ". " + p + "\n";
+                            }
+                        } else {
+                            re = "Liste de résultats de recherche courante inexistante";
                         }
+                        oos.writeObject(re);
                     } else {
-                        re = "Liste de résultats de recherche courante inexistante";
+                        oos.writeObject("nombre de paramètre non comforme");
                     }
-                    oos.writeObject(re);
                     break;
 
                 case "get":
-                    if (!searchTab.isEmpty()) {
-                        int numFichier = Integer.parseInt(tabRequest[1]);
-                        if (numFichier >= 0 && numFichier < searchTab.size()) {
-                            P2PFile key = searchTab.get(numFichier);
-                            TreeSet<String> ts = lfs.getByKey(key);
-                            oos.writeObject(ts);
-                        }else{
-                            oos.writeObject("Numéro de fichier non valide");
-                        }
+                    if (tabRequest.length == 2) {
+                        if (!searchTab.isEmpty()) {
+                            int numFichier = Integer.parseInt(tabRequest[1]);
+                            if (numFichier >= 0 && numFichier < searchTab.size()) {
+                                P2PFile key = searchTab.get(numFichier);
+                                TreeSet<String> ts = lfs.getByKey(key);
+                                oos.writeObject(ts);
+                            } else {
+                                oos.writeObject("Numéro de fichier non valide");
+                            }
 
+                        } else {
+                            oos.writeObject("Liste de résultats de recherche courante inexistante");
+                        }
                     } else {
-                        oos.writeObject("Liste de résultats de recherche courante inexistante");
+                        oos.writeObject("nombre de paramètre non comforme");
                     }
                     break;
             }
