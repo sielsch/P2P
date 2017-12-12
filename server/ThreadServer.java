@@ -111,7 +111,7 @@ public class ThreadServer extends Thread {
                             int numFichier = Integer.parseInt(tabRequest[1]);
                             if (numFichier >= 0 && numFichier < searchTab.size()) {
                                 P2PFile fileToDownload = searchTab.get(numFichier);
-                                TreeSet<String> ts = lfs.getByKey(fileToDownload);
+                                TreeSet<AdressServerTCP> ts = lfs.getByKey(fileToDownload);
 
                                 oos.writeObject(fileToDownload);
 

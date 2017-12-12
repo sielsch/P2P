@@ -40,21 +40,21 @@ public class ListFilesServer {
         }
         annuaire.put(key, ts);
     }
-    
-    public synchronized Set<P2PFile> getAllKeys(){
+
+    public synchronized Set<P2PFile> getAllKeys() {
         return annuaire.keySet();
     }
-    
-    public synchronized ArrayList<P2PFile> getKeysByName(String name){
+
+    public synchronized ArrayList<P2PFile> getKeysByName(String name) {
         Set<P2PFile> all;
         ArrayList<P2PFile> selection = new ArrayList<P2PFile>();
         all = annuaire.keySet();
-        for(P2PFile p : all){
-            if(p.getName().contains(name))
+        for (P2PFile p : all) {
+            if (p.getName().contains(name)) {
                 selection.add(p);
+            }
         }
         return selection;
     }
-    
 
 }
