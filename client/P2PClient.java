@@ -130,6 +130,10 @@ public class P2PClient {
         clavier = new BufferedReader(isr);
     }
 
+    public static void erreurSaisie() {
+        System.out.println("requete invalide, rentrer une nouvelle requete");
+    }
+
     public static void analyseRequete(String requete) throws IOException, QuitException {
         try {
             String[] stringTable = requete.split(" ");
@@ -141,7 +145,7 @@ public class P2PClient {
                         oos.flush();
                         System.out.println((String) ois.readObject());
                     } else {
-                        System.out.println("requete invalide, rentrer une nouvelle requete");
+                        erreurSaisie();
                     }
                     break;
                 case "get":
@@ -149,7 +153,7 @@ public class P2PClient {
                         //throw bad request exception
                         oos.writeObject(requete);
                     } else {
-                        System.out.println("requete invalide, rentrer une nouvelle requete");
+                        erreurSaisie();
                     }
 
                     break;
@@ -158,21 +162,25 @@ public class P2PClient {
                         oos.writeObject(requete);
                         System.out.println((String) ois.readObject());
                     } else {
-                        System.out.println("requete invalide, rentrer une nouvelle requete");
+                        erreurSaisie();
                     }
                     break;
                 case "local":
-                    if (stringTable.length == 1) {
-                        directoryToListFile();
-                        System.out.println(listFiles);
+                    if (stringTable.length == 2) {
+                        if (stringTable[1].equals("list")) {
+                            directoryToListFile();
+                            System.out.println(listFiles);
+                        } else {
+                            erreurSaisie();
+                        }
                     } else {
-                        System.out.println("requete invalide, rentrer une nouvelle requete");
+                        erreurSaisie();
                     }
                     break;
                 case "quit":
                     throw new QuitException();
                 default:
-                    System.out.println("requete invalide, rentrer une nouvelle requete");
+                    erreurSaisie();
 //			throw new BadRequestException();
 
             }
