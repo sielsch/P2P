@@ -44,5 +44,16 @@ public class ListFilesServer {
         return annuaire.keySet();
     }
     
+    public synchronized ArrayList<P2PFile> getKeysByName(String name){
+        Set<P2PFile> all;
+        ArrayList<P2PFile> selection = new ArrayList<P2PFile>();
+        all = annuaire.keySet();
+        for(P2PFile p : all){
+            if(p.getName().contains(name))
+                selection.add(p);
+        }
+        return selection;
+    }
+    
 
 }

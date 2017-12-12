@@ -3,14 +3,14 @@ package server;
 import comClientServer.P2PFile;
 import java.io.*;
 import java.net.Socket;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.*;
 
 public class ThreadServer extends Thread {
 
     Socket sockComm = null;
     ListFilesServer lfs = null;
+    ObjectInputStream ois = null;
+    ObjectOutputStream oos = null;
 
     public ThreadServer(Socket sockComm, ListFilesServer lfs) {
         this.sockComm = sockComm;
@@ -18,8 +18,7 @@ public class ThreadServer extends Thread {
     }
 
     public void run() {
-        ObjectInputStream ois = null;
-        ObjectOutputStream oos = null;
+        String request = "";
 
         try {
             ois = new ObjectInputStream(new BufferedInputStream(sockComm.getInputStream()));
@@ -34,6 +33,9 @@ public class ThreadServer extends Thread {
             for (P2PFile p : ts) {
                 lfs.put(p, IPClient);
             }
+
+            request = (String) ois.readObject();
+            processRequest(request);
 
         } catch (EOFException e) {
             System.out.println("EOF fin de l'émission du client");
@@ -51,10 +53,53 @@ public class ThreadServer extends Thread {
                 oos.close();
                 ois.close();
             } catch (IOException ex) {
-                Logger.getLogger(ThreadServer.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
             }
         }
     }
 
+    public void processRequest(String request) {
+        try {
+            String[] tabRequest = request.split(" ");
+            ArrayList<P2PFile> searchTab = new ArrayList<P2PFile>();
+
+            switch (tabRequest[0]) {
+                case "search":
+                    String res = "";
+                    int i = 0;
+                    searchTab = lfs.getKeysByName(tabRequest[1]);
+                    for (P2PFile p : searchTab) {
+                        res += i + ". " + p + "\n";
+                    }
+                    oos.writeObject(res);
+                    break;
+
+                case "list":
+                    String re = "";
+                    if (!searchTab.isEmpty()) {
+                        int j = 0;
+                        for (P2PFile p : searchTab) {
+                            re += j + ". " + p + "\n";
+                        }
+                    } else {
+                        re= "Liste de résultats de recherche courante inexistante";
+                    }
+                    break;
+
+                case "get":
+                    if(!searchTab.isEmpty()){
+                        P2PFile key = searchTab.get(Integer.parseInt(tabRequest[1]));   
+                        lfs.getByKey(key);
+                    }
+                   //TODOOOO (PULL avant)
+                    break;
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }catch (NumberFormatException e) {
+            e.printStackTrace();
+            System.out.println("Erreur entrée non comforme");
+        } 
+    }
 
 }
