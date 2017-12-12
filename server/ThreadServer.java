@@ -116,6 +116,7 @@ public class ThreadServer extends Thread {
                                 oos.writeObject(fileToDownload);
 
                                 oos.writeObject(ts);
+                                System.out.println("\n ENVOI P2PFILE + LIST OF SEEDERS");
                             } else {
                                 oos.writeObject("Numéro de fichier non valide");
                             }
@@ -128,9 +129,10 @@ public class ThreadServer extends Thread {
                     }
                     break;
                 default:
-                    System.out.println("requete invalide, rentrer une nouvelle requete");
+                    oos.writeObject("requete invalide, rentrer une nouvelle requete");
 //			throw new BadRequestException();
             }
+            oos.flush();
         } catch (IOException ex) {
             ex.printStackTrace();
         } catch (NumberFormatException e) {
