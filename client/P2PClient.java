@@ -1,17 +1,7 @@
 package client;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.io.*;
+import java.net.*;
 import java.util.TreeSet;
 
 import comClientServer.P2PFile;
@@ -114,7 +104,7 @@ public class P2PClient {
 	}
 
 	public static TreeSet<P2PFile> directoryToListFile() {
-		TreeSet t = new TreeSet<P2PFile>();
+		TreeSet<P2PFile> t = new TreeSet<>();
 		File[] listOfFiles = P2P_directory.listFiles();
 
 		if (listOfFiles.length == 0) {

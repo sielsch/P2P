@@ -6,7 +6,7 @@ import java.util.TreeSet;
 public class Functions {
 
     public TreeSet<P2PFile> directoryToListFile(String directoryName) {
-        TreeSet t = new TreeSet<P2PFile>();
+        TreeSet<P2PFile> t = new TreeSet<>();
                 
         File folder = new File(directoryName);
         File[] listOfFiles = folder.listFiles();

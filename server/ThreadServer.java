@@ -82,24 +82,33 @@ public class ThreadServer extends Thread {
                             re += j + ". " + p + "\n";
                         }
                     } else {
-                        re= "Liste de résultats de recherche courante inexistante";
+                        re = "Liste de résultats de recherche courante inexistante";
                     }
+                    oos.writeObject(re);
                     break;
 
                 case "get":
-                    if(!searchTab.isEmpty()){
-                        P2PFile key = searchTab.get(Integer.parseInt(tabRequest[1]));   
-                        lfs.getByKey(key);
+                    if (!searchTab.isEmpty()) {
+                        int numFichier = Integer.parseInt(tabRequest[1]);
+                        if (numFichier >= 0 && numFichier < searchTab.size()) {
+                            P2PFile key = searchTab.get(numFichier);
+                            TreeSet<String> ts = lfs.getByKey(key);
+                            oos.writeObject(ts);
+                        }else{
+                            oos.writeObject("Numéro de fichier non valide");
+                        }
+
+                    } else {
+                        oos.writeObject("Liste de résultats de recherche courante inexistante");
                     }
-                   //TODOOOO (PULL avant)
                     break;
             }
         } catch (IOException ex) {
             ex.printStackTrace();
-        }catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             e.printStackTrace();
             System.out.println("Erreur entrée non comforme");
-        } 
+        }
     }
 
 }
