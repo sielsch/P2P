@@ -1,8 +1,16 @@
 package comClientServer;
 
-public class P2PFile implements Comparable<P2PFile> {
+import java.io.Serializable;
 
-    private long taille;
+public class P2PFile implements Comparable<P2PFile> , Serializable {
+
+	
+	
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5134500275816488234L;
+	private long taille;
     private String name;
 
     public P2PFile(long taille, String name) {
@@ -61,6 +69,21 @@ public class P2PFile implements Comparable<P2PFile> {
         return true;
     }
 
+    @Override
+    public int compareTo(P2PFile p) {
+        int compare = this.getName().compareTo(p.getName());
+        if (compare == 0) {
+            if (this.getTaille() < p.getTaille()) {
+                compare = -1;
+            } else if (this.getTaille() > p.getTaille()) {
+                compare = 1;
+            } else {
+                compare = 0;
+            }
+        }
+        return compare;
+    }
+    
     @Override
     public String toString() {
         return "" + this.name + ", [" + this.taille + " octets]";

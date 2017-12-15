@@ -25,7 +25,7 @@ public class P2PClient {
 	private static ObjectInputStream ois = null;
 	private static BufferedOutputStream bos = null;
 	private static BufferedInputStream bis = null;
-	private static TreeSet<P2PFile> listFiles = null;
+	private static HashSet<P2PFile> listFiles = null;
 
 	private static InputStreamReader isr;
 	private static BufferedReader clavier;
@@ -88,7 +88,7 @@ public class P2PClient {
 			System.exit(1);
 		}
 
-		hostServer = argument[2];
+		hostServer = argument[1];
 
 		P2P_directory = new File(argument[2]);
 		if (!P2P_directory.isDirectory()) {
@@ -106,8 +106,8 @@ public class P2PClient {
 		}
 	}
 
-	public static TreeSet<P2PFile> directoryToListFile() {
-		TreeSet<P2PFile> t = new TreeSet<>();
+	public static HashSet<P2PFile> directoryToListFile() {
+		HashSet<P2PFile> t = new HashSet<>();
 		File[] listOfFiles = P2P_directory.listFiles();
 
 		if (listOfFiles.length == 0) {
@@ -125,6 +125,7 @@ public class P2PClient {
 
 	public static void initFlux(Socket socketComm) throws IOException {
 		oos = new ObjectOutputStream(new BufferedOutputStream(socketComm.getOutputStream()));
+		oos.flush();
 		ois = new ObjectInputStream(new BufferedInputStream(socketComm.getInputStream()));
 		isr = new InputStreamReader(System.in);
 		clavier = new BufferedReader(isr);
@@ -203,11 +204,13 @@ public class P2PClient {
 				
 				Socket socketComm = new Socket(adressServerTCP.getHost(), adressServerTCP.getPort());
 				oos_client = new ObjectOutputStream(new BufferedOutputStream(socketComm.getOutputStream()));
+				oos_client.flush();
 				oos_client.writeUTF(localHost);
 				oos_client.writeInt(sockUdpReceive.getLocalPort());
 				oos_client.writeObject(file);
 				oos_client.writeLong(premierMorceau);
 				oos_client.writeLong(dernierMorceau);
+				oos_client.flush();
 				premierMorceau = premierMorceau + nbPaquetClient;
 				dernierMorceau = dernierMorceau + nbPaquetClient;
 
