@@ -107,7 +107,7 @@ public class P2PClient {
 	}
 
 	public static HashSet<P2PFile> directoryToListFile() {
-		HashSet<P2PFile> t = new HashSet<>();
+		HashSet<P2PFile> h = new HashSet<>();
 		File[] listOfFiles = P2P_directory.listFiles();
 
 		if (listOfFiles.length == 0) {
@@ -116,11 +116,11 @@ public class P2PClient {
 		for (int i = 0; i < listOfFiles.length; i++) {
 			if (listOfFiles[i].isFile()) {
 				P2PFile p = new P2PFile(listOfFiles[i].length(), listOfFiles[i].getName());
-				t.add(p);
+				h.add(p);
 			}
 		}
 
-		return t;
+		return h;
 	}
 
 	public static void initFlux(Socket socketComm) throws IOException {
@@ -149,6 +149,7 @@ public class P2PClient {
 				if (stringTable.length == 2) {
 					// throw bad request exception
 					oos.writeObject(requete);
+					oos.flush();
 				} else {
 					System.out.println("requete invalide, rentrer une nouvelle requete");
 				}
@@ -157,15 +158,21 @@ public class P2PClient {
 			case "list":
 				if (stringTable.length == 1) {
 					oos.writeObject(requete);
-					System.out.println((String) ois.readObject());
+					oos.flush();
+					System.out.println((String)ois.readObject());
 				} else {
 					System.out.println("requete invalide, rentrer une nouvelle requete");
 				}
 				break;
 			case "local":
-				if (stringTable.length == 1) {
-					directoryToListFile();
-					System.out.println(listFiles);
+				if (stringTable.length == 2) {
+					if(stringTable[1].equals("list")){
+						directoryToListFile();
+						for (P2PFile f : listFiles) {
+							System.out.println(f);
+						}
+						
+					}				
 				} else {
 					System.out.println("requete invalide, rentrer une nouvelle requete");
 				}

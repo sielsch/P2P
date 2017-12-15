@@ -18,6 +18,10 @@ public class ListFilesServer {
 
     private ConcurrentHashMap<P2PFile, HashSet<AdressServerTCP>> annuaire;
 
+    public ListFilesServer() {
+		annuaire = new ConcurrentHashMap<>();
+	}
+    
     public synchronized boolean containsKey(P2PFile key) {
         return annuaire.containsKey(key);
     }
