@@ -21,6 +21,9 @@ public class P2PClient {
 	private static String localHost;
 	private static ThreadClient threadClient = null;
 
+	private static P2PFile file_to_download = null;
+	private static HashSet<AdressServerTCP> listClientDownload=null;
+
 	private static ObjectOutputStream oos = null;
 	private static ObjectInputStream ois = null;
 	private static BufferedOutputStream bos = null;
@@ -150,6 +153,15 @@ public class P2PClient {
 					// throw bad request exception
 					oos.writeObject(requete);
 					oos.flush();
+					file_to_download = (P2PFile) ois.readObject();
+					
+						listClientDownload = (HashSet<AdressServerTCP>)ois.readObject();
+				if(checkFileAlreadyExists(file_to_download)){
+					System.out.println("le fichier est déja présent");
+				} else{
+					telechargement(listClientDownload, file_to_download);
+				}
+					
 				} else {
 					System.out.println("requete invalide, rentrer une nouvelle requete");
 				}
@@ -159,20 +171,20 @@ public class P2PClient {
 				if (stringTable.length == 1) {
 					oos.writeObject(requete);
 					oos.flush();
-					System.out.println((String)ois.readObject());
+					System.out.println((String) ois.readObject());
 				} else {
 					System.out.println("requete invalide, rentrer une nouvelle requete");
 				}
 				break;
 			case "local":
 				if (stringTable.length == 2) {
-					if(stringTable[1].equals("list")){
+					if (stringTable[1].equals("list")) {
 						directoryToListFile();
 						for (P2PFile f : listFiles) {
 							System.out.println(f);
 						}
-						
-					}				
+
+					}
 				} else {
 					System.out.println("requete invalide, rentrer une nouvelle requete");
 				}
@@ -190,7 +202,7 @@ public class P2PClient {
 
 	}
 
-	public static void telechargement(TreeSet<AdressServerTCP> listClient, P2PFile file) {
+	public static void telechargement(HashSet<AdressServerTCP> listClient, P2PFile file) {
 
 		long nbPaquet = file.getTaille() / P2PParametre.TAILLE_PAQUET;
 
@@ -207,8 +219,8 @@ public class P2PClient {
 			try {
 				ObjectOutputStream oos_client = null;
 				DatagramSocket sockUdpReceive = new DatagramSocket();
-				
-				
+				System.out.println(adressServerTCP.getHost());
+				System.out.println(adressServerTCP.getPort());
 				Socket socketComm = new Socket(adressServerTCP.getHost(), adressServerTCP.getPort());
 				oos_client = new ObjectOutputStream(new BufferedOutputStream(socketComm.getOutputStream()));
 				oos_client.flush();
@@ -231,4 +243,12 @@ public class P2PClient {
 		}
 	}
 
+	public static boolean checkFileAlreadyExists(P2PFile fileToDownload){
+		for (P2PFile f : listFiles) {
+			if (f.equals(fileToDownload)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
