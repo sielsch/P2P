@@ -55,6 +55,7 @@ public class ThreadSender extends Thread {
 				
 				while (bis.read(buff, 0, P2PParametre.TAILLE_PAQUET) > 0) {
 					//ajoute la place du packet dans le fichier
+					//ENZO: met le numéro du packet au debut du packet (en long) j'ai construit le receiver comme ça
 					longInByte = longToBytes(i);
 					int k=0;
 					for (int j = buffSize - Long.BYTES; j < buff.length; j++) {
