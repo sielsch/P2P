@@ -48,6 +48,7 @@ public class ThreadClient extends Thread {
 			System.out.println(premierMorceau);
 			System.out.println(dernierMorceau);
 			
+//			ThreadSender senderUDP = new ThreadSender();
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

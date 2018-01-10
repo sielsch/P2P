@@ -43,6 +43,7 @@ public class P2PClient {
 		try {
 			socketConn = new ServerSocket(0);
 			threadClient = new ThreadClient(socketConn);
+			threadClient.start();
 			socketComm = new Socket(hostServer, portServer);
 
 			initFlux(socketComm);
