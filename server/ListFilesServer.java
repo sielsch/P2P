@@ -45,6 +45,22 @@ public class ListFilesServer {
         }
         annuaire.put(key, ts);
     }
+    
+    public synchronized void removeByClient(HashSet<P2PFile> fileClient, AdressServerTCP adressClient){
+    	
+    	for (P2PFile file : fileClient) {
+			HashSet<AdressServerTCP> adressFile = this.getByKey(file);
+			
+			Iterator<AdressServerTCP> iterator = adressFile.iterator();
+			while (iterator.hasNext()) {
+				AdressServerTCP adress = iterator.next();
+				if(adress.equals(adressClient)){
+					iterator.remove();
+				}
+			}
+			
+		}
+    }
 
     public synchronized Set<P2PFile> getAllKeys() {
         return annuaire.keySet();

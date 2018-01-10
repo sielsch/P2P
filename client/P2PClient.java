@@ -153,9 +153,8 @@ public class P2PClient {
 					// throw bad request exception
 					oos.writeObject(requete);
 					oos.flush();
-					file_to_download = (P2PFile) ois.readObject();
-					
-						listClientDownload = (HashSet<AdressServerTCP>)ois.readObject();
+					file_to_download = (P2PFile) ois.readObject();					
+					listClientDownload = (HashSet<AdressServerTCP>)ois.readObject();
 				if(checkFileAlreadyExists(file_to_download)){
 					System.out.println("le fichier est déja présent");
 				} else{
@@ -214,13 +213,14 @@ public class P2PClient {
 
 		long premierMorceau = 0;
 		long dernierMorceau = nbPaquetClient;
-
+		for (AdressServerTCP adressServerTCP : listClient) {
+			System.out.println(adressServerTCP.getHost());
+			System.out.println(adressServerTCP.getPort());
+		}
 		for (AdressServerTCP adressServerTCP : listClient) {
 			try {
 				ObjectOutputStream oos_client = null;
-				DatagramSocket sockUdpReceive = new DatagramSocket();
-				System.out.println(adressServerTCP.getHost());
-				System.out.println(adressServerTCP.getPort());
+				DatagramSocket sockUdpReceive = new DatagramSocket();				
 				Socket socketComm = new Socket(adressServerTCP.getHost(), adressServerTCP.getPort());
 				oos_client = new ObjectOutputStream(new BufferedOutputStream(socketComm.getOutputStream()));
 				oos_client.flush();
@@ -232,6 +232,7 @@ public class P2PClient {
 				oos_client.flush();
 				premierMorceau = premierMorceau + nbPaquetClient;
 				dernierMorceau = dernierMorceau + nbPaquetClient;
+				System.out.println("end try");
 
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block

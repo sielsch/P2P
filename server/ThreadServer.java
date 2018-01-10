@@ -11,14 +11,16 @@ import java.util.logging.Logger;
 public class ThreadServer extends Thread {
 
 	Socket sockComm = null;
-	ListFilesServer lfs = null;
+	ListFilesServer listFileServer = null;
 	ObjectInputStream ois = null;
 	ObjectOutputStream oos = null;
 	HashMap<Integer, P2PFile> searchTab = null;
+	AdressServerTCP adressTCPClient =null ;
+	HashSet<P2PFile> hashSetFileClient;
 
-	public ThreadServer(Socket sockComm, ListFilesServer lfs) {
+	public ThreadServer(Socket sockComm, ListFilesServer listFileServer) {
 		this.sockComm = sockComm;
-		this.lfs = lfs;
+		this.listFileServer = listFileServer;
 		searchTab = new HashMap<Integer, P2PFile>();
 
 	}
@@ -29,11 +31,11 @@ public class ThreadServer extends Thread {
 		try {
 			initFlux();
 
-			AdressServerTCP adressTCP = (AdressServerTCP) ois.readObject();
-			HashSet<P2PFile> ts = ((HashSet<P2PFile>) ois.readObject());
+			 adressTCPClient = (AdressServerTCP) ois.readObject();
+			 hashSetFileClient = ((HashSet<P2PFile>) ois.readObject());
 
-			for (P2PFile p : ts) {
-				lfs.put(p, adressTCP);
+			for (P2PFile file : hashSetFileClient) {
+				listFileServer.put(file, adressTCPClient);
 			}
 
 			while (true) {
@@ -43,6 +45,8 @@ public class ThreadServer extends Thread {
 
 		} catch (EOFException e) {
 			System.out.println("EOF fin de l'émission du client");
+			listFileServer.removeByClient(hashSetFileClient, adressTCPClient);
+			
 		} catch (IOException e) {
 			System.out.println("Pb de communication " + e.toString());
 			e.printStackTrace();
@@ -82,7 +86,7 @@ public class ThreadServer extends Thread {
 				if (tabRequest.length == 2) {
 					searchTab.clear();
 					int i = 0;
-					for (P2PFile pfile : lfs.getKeysByName(tabRequest[1])) {
+					for (P2PFile pfile : listFileServer.getKeysByName(tabRequest[1])) {
 						searchTab.put(i, pfile);
 						i++;
 					}
@@ -115,7 +119,7 @@ public class ThreadServer extends Thread {
 						int numFichier = Integer.parseInt(tabRequest[1]);
 						if (numFichier >= 0 && numFichier < searchTab.size()) {
 							P2PFile fileToDownload = searchTab.get(numFichier);
-							HashSet<AdressServerTCP> hashSetAdress = lfs.getByKey(fileToDownload);
+							HashSet<AdressServerTCP> hashSetAdress = listFileServer.getByKey(fileToDownload);
 							oos.writeObject(fileToDownload);
 							oos.writeObject(hashSetAdress);
 							System.out.println("\n ENVOI P2PFILE + LIST OF SEEDERS");
