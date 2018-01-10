@@ -53,7 +53,7 @@ public class ThreadSender extends Thread{
 			
 		
 			for (long i = premierMorceau; i < dernierMorceau; i++) {
-				bis.read(buff);
+
 				for (int j = buffSize-Long.BYTES; j < buff.length; j++) {
 					
 				}

@@ -205,21 +205,33 @@ public class P2PClient {
 	public static void telechargement(HashSet<AdressServerTCP> listClient, P2PFile file) {
 
 		long nbPaquet = file.getTaille() / P2PParametre.TAILLE_PAQUET;
-
+		
+		long tailleDernierPaquet;
+		
 		if (file.getTaille() % P2PParametre.TAILLE_PAQUET != 0) {
+			tailleDernierPaquet=file.getTaille() % P2PParametre.TAILLE_PAQUET;
 			nbPaquet++;
+		} else {
+			tailleDernierPaquet=P2PParametre.TAILLE_PAQUET;
 		}
 
 		long nbPaquetClient = nbPaquet / listClient.size();
 
 		long premierMorceau = 0;
 		long dernierMorceau = nbPaquetClient;
+		
 		for (AdressServerTCP adressServerTCP : listClient) {
 			System.out.println(adressServerTCP.getHost());
 			System.out.println(adressServerTCP.getPort());
 		}
+		int indexClient=1;
 		for (AdressServerTCP adressServerTCP : listClient) {
 			try {
+				
+				if(listClient.size()==indexClient){
+					dernierMorceau+=nbPaquet%nbPaquetClient;  // verifie si c'est le dernier client, et ajoute les derniers packets
+				}
+				
 				ObjectOutputStream oos_client = null;
 				DatagramSocket sockUdpReceive = new DatagramSocket();				
 				Socket socketComm = new Socket(adressServerTCP.getHost(), adressServerTCP.getPort());
@@ -242,6 +254,8 @@ public class P2PClient {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			premierMorceau+=nbPaquetClient;
+			dernierMorceau+=nbPaquetClient;
 		}
 	}
 
